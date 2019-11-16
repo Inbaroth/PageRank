@@ -12,7 +12,6 @@ def load_graph(path):
         df = pd.read_csv(path, header=None)
     except FileNotFoundError:
         print("an error occurred while trying to read the file")
-    finally:
         exit(1)
 
     for row in df.iterrows():
@@ -65,6 +64,7 @@ def calculate_page_rank(beta, delta, maxIterations):
             pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum) / len(pages_rank_dict) #TODO: check if needed
         next_pages_rank_dict = {}
         sum = 0
+    global calculate_pagerank_activated
     calculate_pagerank_activated = True
 
 
@@ -72,55 +72,49 @@ def get_PageRank(node_name):
     if not calculate_pagerank_activated:
         return -1
     if node_name not in pages_rank_dict:
-
         return -1
     else:
         return pages_rank_dict[node_name]
-
-
-def get_all_PageRank():
-    all_page_rank = list()
-    if not calculate_pagerank_activated:
-        return all_page_rank
-
-    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1])
-
-    return sorted_pagerank_dict
-
-
-def main():
-    load_graph("C:\\Users\\amiri\\Desktop\\myGrph.csv")
-
-
-if __name__ == '__main__':
-    main()
-
 
 
 def get_top_nodes(n):
     highest_pagerank_n_pages = list()
     if not calculate_pagerank_activated:
         return highest_pagerank_n_pages
-    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1])
-    if n > 0:
+    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1], reverse=True)
+    if n > 0 and n < len(pages_rank_dict):
         i = 0
         while i < n:
             highest_pagerank_n_pages.append(sorted_pagerank_dict[i])
             i = i + 1
         return highest_pagerank_n_pages
     if n > len(pages_rank_dict):
-        get_all_PageRank()
+        return get_all_PageRank()
+
+
+def get_all_PageRank():
+    all_page_rank = list()
+    if not calculate_pagerank_activated:
+        return all_page_rank
+    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1], reverse=True)
+    return sorted_pagerank_dict
 
 
 def main():
-    load_graph("C:\\Users\\Inbar\\Downloads\\myGraph.csv")
+    load_graph("C:\\Users\\Inbar\\Downloads\\Wikipedia_votes.csv")
+    print("out_edges_dict")
     print(out_edges_dict)
+    print("in_edges_dict")
     print(in_edges_dict)
-    print(pages_rank_dict)
+    print("pages_rank_dict")
     calculate_page_rank(1, 0.001, 20)
     print(pages_rank_dict)
-    print(get_PageRank("A"))
-    print(get_top_nodes(5))
+    print("get_PageRank: 3")
+    print(get_PageRank("3"))
+    print("get_top_nodes: 2")
+    print(get_top_nodes(2))
+    print("get_all_PageRank")
+    print(get_all_PageRank())
 
 
 if __name__ == '__main__':
