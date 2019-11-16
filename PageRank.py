@@ -36,14 +36,14 @@ def load_graph(path):
             pages_rank_dict[dest] = 0
 
 
-def calculate_page_rank(beta, delta, maxIterations):
+def calculate_page_rank(beta, delta, max_iterations):
     next_pages_rank_dict = {}
     sum_diff_smaller_then_delta = False
-    sum = 0 #TODO: S from equetion, check if needed
+    sum = 0
     # iteration 0
     for page in pages_rank_dict:
         pages_rank_dict[page] = 1/len(pages_rank_dict)
-    while maxIterations > 0 and not sum_diff_smaller_then_delta:
+    while max_iterations > 0 and not sum_diff_smaller_then_delta:
         sum_diff = 0
         for page in pages_rank_dict:
             sum_indeg = 0
@@ -53,11 +53,11 @@ def calculate_page_rank(beta, delta, maxIterations):
                 for in_deg in in_edges_dict[page]:
                     sum_indeg = sum_indeg + beta * (pages_rank_dict[in_deg] / len(out_edges_dict[in_deg]))
                 next_pages_rank_dict[page] = sum_indeg
-                sum = sum + sum_indeg #TODO: check if neeeded
-        maxIterations = maxIterations - 1
+                sum = sum + sum_indeg
+        max_iterations = max_iterations - 1
         for i in next_pages_rank_dict:
             prev_pagerank = pages_rank_dict[i]
-            pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum) / len(pages_rank_dict) #TODO: check if needed
+            pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum) / len(pages_rank_dict)
             sum_diff = sum_diff + abs(pages_rank_dict[i]-prev_pagerank)
         if sum_diff < delta:
             sum_diff_smaller_then_delta = True
@@ -78,10 +78,8 @@ def get_PageRank(node_name):
 
 def get_top_nodes(n):
     highest_pagerank_n_pages = list()
-    if not calculate_pagerank_activated:
-        return highest_pagerank_n_pages
-    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1], reverse=True)
-    if n > 0 and n < len(pages_rank_dict):
+    sorted_pagerank_dict = get_all_PageRank()
+    if 0 < n < len(pages_rank_dict):
         i = 0
         while i < n:
             highest_pagerank_n_pages.append(sorted_pagerank_dict[i])
@@ -100,7 +98,7 @@ def get_all_PageRank():
 
 
 def main():
-    load_graph("C:\\Users\\Inbar\\Downloads\\Wikipedia_votes.csv")
+    load_graph("C:\\Users\\amiri\\Desktop\\Wikipedia_votes.csv")
     print("out_edges_dict")
     print(out_edges_dict)
     print("in_edges_dict")
