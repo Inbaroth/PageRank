@@ -8,7 +8,13 @@ calculate_pagerank_activated = False
 
 
 def load_graph(path):
-    df = pd.read_csv(path, header=None)
+    try:
+        df = pd.read_csv(path, header=None)
+    except FileNotFoundError:
+        print("an error occurred while trying to read the file")
+    finally:
+        exit(1)
+
     for row in df.iterrows():
         source = str(row[1][0])
         dest = str(row[1][1])
@@ -70,6 +76,25 @@ def get_PageRank(node_name):
         return -1
     else:
         return pages_rank_dict[node_name]
+
+
+def get_all_PageRank():
+    all_page_rank = list()
+    if not calculate_pagerank_activated:
+        return all_page_rank
+
+    sorted_pagerank_dict = sorted(pages_rank_dict.items(), key=lambda x: x[1])
+
+    return sorted_pagerank_dict
+
+
+def main():
+    load_graph("C:\\Users\\amiri\\Desktop\\myGrph.csv")
+
+
+if __name__ == '__main__':
+    main()
+
 
 
 def get_top_nodes(n):
