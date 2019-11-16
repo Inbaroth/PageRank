@@ -1,13 +1,14 @@
 import pandas as pd
 
+out_edges_dict = {}                     # adjacency list for all the out edges
+in_edges_dict = {}                      # adjacency list for all the in edges
+pages_rank_dict = {}                    # the page ranks of all the vertexes
+calculate_pagerank_activated = False    # flag which tells if we calculated the page ranks or not
 
-out_edges_dict = {}
-in_edges_dict = {}
-pages_rank_dict = {}
-calculate_pagerank_activated = False
 
-
+# get a path to a csv file and initialize our three global dictionaries
 def load_graph(path):
+    # csv file loading:
     try:
         df = pd.read_csv(path, header=None)
     except FileNotFoundError:
@@ -36,37 +37,49 @@ def load_graph(path):
             pages_rank_dict[dest] = 0
 
 
-def calculate_page_rank(beta, delta, max_iterations):
+# calculate the page ranks
+def calculate_page_rank(beta, delta, maxIterations):
     next_pages_rank_dict = {}
     sum_diff_smaller_then_delta = False
-    sum = 0
-    # iteration 0
+    sum_rank = 0
+
+    # iteration 0:
     for page in pages_rank_dict:
         pages_rank_dict[page] = 1/len(pages_rank_dict)
-    while max_iterations > 0 and not sum_diff_smaller_then_delta:
+
+    # the iterations loop:
+    while maxIterations > 0 and not sum_diff_smaller_then_delta:
         sum_diff = 0
+        # the calculation of the temporary page ranks:
         for page in pages_rank_dict:
-            sum_indeg = 0
+            sum_indeg = 0    # the new page rank value for the current page in the current iteration
             if page not in in_edges_dict:
                 pages_rank_dict[page] = 0
             if page in in_edges_dict:
                 for in_deg in in_edges_dict[page]:
                     sum_indeg = sum_indeg + beta * (pages_rank_dict[in_deg] / len(out_edges_dict[in_deg]))
                 next_pages_rank_dict[page] = sum_indeg
-                sum = sum + sum_indeg
-        max_iterations = max_iterations - 1
+                sum_rank = sum_rank + sum_indeg
+        maxIterations = maxIterations - 1
+
+        # the calculation of the final page ranks:
         for i in next_pages_rank_dict:
             prev_pagerank = pages_rank_dict[i]
-            pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum) / len(pages_rank_dict)
+            pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum_rank) / len(pages_rank_dict)
             sum_diff = sum_diff + abs(pages_rank_dict[i]-prev_pagerank)
+
+        # checking stop conditions:
         if sum_diff < delta:
             sum_diff_smaller_then_delta = True
+
         next_pages_rank_dict = {}
-        sum = 0
+        sum_rank = 0
+
     global calculate_pagerank_activated
     calculate_pagerank_activated = True
 
 
+# gets a node name and return it's page rank
 def get_PageRank(node_name):
     if not calculate_pagerank_activated:
         return -1
@@ -76,6 +89,7 @@ def get_PageRank(node_name):
         return pages_rank_dict[node_name]
 
 
+# get number n and return the n nodes with the highest page rank ordered form the highest to the lowest
 def get_top_nodes(n):
     highest_pagerank_n_pages = list()
     sorted_pagerank_dict = get_all_PageRank()
@@ -89,6 +103,7 @@ def get_top_nodes(n):
         return get_all_PageRank()
 
 
+# return all the page ranks
 def get_all_PageRank():
     all_page_rank = list()
     if not calculate_pagerank_activated:
@@ -98,13 +113,14 @@ def get_all_PageRank():
 
 
 def main():
-    load_graph("C:\\Users\\amiri\\Desktop\\Wikipedia_votes.csv")
-    print("out_edges_dict")
-    print(out_edges_dict)
-    print("in_edges_dict")
-    print(in_edges_dict)
-    print("pages_rank_dict")
-    calculate_page_rank(1, 0.001, 20)
+    load_graph("C:\\Users\\amiri\\Desktop\\facebook_combined.csv")
+    # print("out_edges_dict")
+    # print(out_edges_dict)
+    # print("in_edges_dict")
+    # print(in_edges_dict)
+    # print("pages_rank_dict")
+    calculate_page_rank(0.85, 0.001, 20)
+    """
     print(pages_rank_dict)
     print("get_PageRank: 3")
     print(get_PageRank("3"))
@@ -112,7 +128,10 @@ def main():
     print(get_top_nodes(2))
     print("get_all_PageRank")
     print(get_all_PageRank())
+    """
+    highest_pagerank_n_pages = get_top_nodes(10)
 
+    x = 2
 
 if __name__ == '__main__':
     main()
