@@ -113,15 +113,16 @@ def get_all_PageRank():
 
 
 def main():
-    load_graph("C:\\Users\\amiri\\Desktop\\facebook_combined.csv")
+    load_graph("C:\\Users\\Inbar\\Downloads\\facebook_combined.csv")
     # print("out_edges_dict")
     # print(out_edges_dict)
     # print("in_edges_dict")
     # print(in_edges_dict)
     # print("pages_rank_dict")
     calculate_page_rank(0.85, 0.001, 20)
-    """
     print(pages_rank_dict)
+    """
+    
     print("get_PageRank: 3")
     print(get_PageRank("3"))
     print("get_top_nodes: 2")
@@ -131,7 +132,6 @@ def main():
     """
     highest_pagerank_n_pages = get_top_nodes(10)
 
-    x = 2
 
 if __name__ == '__main__':
     main()
