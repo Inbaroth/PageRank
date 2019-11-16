@@ -38,30 +38,29 @@ def load_graph(path):
 
 def calculate_page_rank(beta, delta, maxIterations):
     next_pages_rank_dict = {}
-    exist_smaller_then_delta = False
+    sum_diff_smaller_then_delta = False
     sum = 0 #TODO: S from equetion, check if needed
     # iteration 0
     for page in pages_rank_dict:
         pages_rank_dict[page] = 1/len(pages_rank_dict)
-
-    while maxIterations > 0 and not exist_smaller_then_delta:
+    while maxIterations > 0 and not sum_diff_smaller_then_delta:
+        sum_diff = 0
         for page in pages_rank_dict:
             sum_indeg = 0
             if page not in in_edges_dict:
                 pages_rank_dict[page] = 0
             if page in in_edges_dict:
-                prev_pagerank = pages_rank_dict[page]
                 for in_deg in in_edges_dict[page]:
                     sum_indeg = sum_indeg + beta * (pages_rank_dict[in_deg] / len(out_edges_dict[in_deg]))
                 next_pages_rank_dict[page] = sum_indeg
                 sum = sum + sum_indeg #TODO: check if neeeded
-                current_delta = abs(sum_indeg - prev_pagerank)
-                if current_delta >= 0:
-                    if current_delta < delta:
-                        exist_smaller_then_delta = True
         maxIterations = maxIterations - 1
         for i in next_pages_rank_dict:
+            prev_pagerank = pages_rank_dict[i]
             pages_rank_dict[i] = next_pages_rank_dict[i] + (1-sum) / len(pages_rank_dict) #TODO: check if needed
+            sum_diff = sum_diff + abs(pages_rank_dict[i]-prev_pagerank)
+        if sum_diff < delta:
+            sum_diff_smaller_then_delta = True
         next_pages_rank_dict = {}
         sum = 0
     global calculate_pagerank_activated
