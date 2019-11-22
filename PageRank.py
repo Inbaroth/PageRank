@@ -60,12 +60,12 @@ def calculate_page_rank(beta, delta, maxIterations):
         diff = 0
         # the calculation of the temporary page ranks:
         for page in pages_ranks:
-            cur_rank = 0    # the new page rank value for the current page in the current iteration
+            temporary_page_rank = 0    # the new page rank value for the current page in the current iteration
             for in_neighbor in in_edges[page]:
-                cur_rank += beta * (pages_ranks[in_neighbor] / len(out_edges[in_neighbor]))
-            s += cur_rank
-            ranks_saver[page] = cur_rank
-            diff += abs(cur_rank - pages_ranks[page])
+                temporary_page_rank += beta * (pages_ranks[in_neighbor] / len(out_edges[in_neighbor]))
+            s += temporary_page_rank
+            ranks_saver[page] = temporary_page_rank
+            diff += abs(temporary_page_rank - pages_ranks[page])
 
         # the calculation of the final (not temporary) page ranks:
         for page in pages_ranks:
@@ -108,28 +108,3 @@ def get_all_PageRank():
         return all_page_rank
     sorted_pagerank_dict = sorted(pages_ranks.items(), key=lambda x: x[1], reverse=True)
     return sorted_pagerank_dict
-
-
-def main():
-    load_graph("C:\\Users\\amiri\\Desktop\\Wikipedia_votes.csv")
-    # print("out_edges_dict")
-    # print(out_edges_dict)
-    # print("in_edges_dict")
-    # print(in_edges_dict)
-    # print("pages_rank_dict")
-    calculate_page_rank(0.85, 0.001, 20)
-    print(get_top_nodes(10))
-    """
-    
-    print("get_PageRank: 3")
-    print(get_PageRank("3"))
-    print("get_top_nodes: 2")
-    print(get_top_nodes(2))
-    print("get_all_PageRank")
-    print(get_all_PageRank())
-    """
-    highest_pagerank_n_pages = get_top_nodes(10)
-
-
-if __name__ == '__main__':
-    main()
